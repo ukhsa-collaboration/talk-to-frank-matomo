@@ -1,0 +1,63 @@
+name: "Build, Test and Release"
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  id-token: write
+  actions: read
+  pull-requests: write
+
+jobs:
+  prepare-release-tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      release_tag: ${{ steps.export.outputs.release_tag }}
+    steps:
+      - name: Checkout repository
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+
+      - name: Bump tag
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        id: bump
+        uses: ukhsa-collaboration/devops-github-actions/.github/actions/github-bump-tag@52f31c5544ee5204dd0e169728c595b6a402205f
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+
+      - name: Export release tag
+        id: export
+        run: echo "release_tag=${{ steps.bump.outputs.new_tag }}" >> "$GITHUB_OUTPUT"
+
+  container-image:
+    name: Build, Test and Release
+    needs: prepare-release-tag
+    permissions:
+      contents: write
+      id-token: write
+      actions: read
+      pull-requests: write
+    uses: ./.github/workflows/container-image-build-php-aws-ecs.yml
+    with:
+      app_name: ${{ vars.APP_NAME }}
+      service_identifier: ${{ vars.SERVICE_IDENTIFIER }}
+      ecr_registry_namespace: ${{ vars.ECR_NAMESPACE }}
+      aws_region: ${{ vars.AWS_REGION }}
+      push_image: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      release_tag: ${{ needs.prepare-release-tag.outputs.release_tag }}
+      sign_release: true
+      deploy_environments: >-
+        [
+          { "name": "prd", "base_url": "https://matomo.prod.phedigital.co.uk", "smoke_test_url": "https://matomo.prod.phedigital.co.uk", "ecs_service": "aw-ttf-euw2-prd-ecsservice-matomo", "ecs_cluster": "aw-ttf-euw2-prd-ecs-cluster" }
+        ]
+    secrets: inherit

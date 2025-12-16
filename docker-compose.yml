@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  mariadb:
+    environment:
+      - MARIADB_DATABASE=matomo
+      - MARIADB_PASSWORD=password
+      - MARIADB_ROOT_PASSWORD=secretpassword
+      - MARIADB_USER=user
+    image: mariadb:latest
+
+  matomo:
+    build:
+      context: .
+      secrets:
+        - matomo_license_key
+    ports:
+      - "80:80"
+    environment:
+      - DB_HOST=mariadb
+      - DB_USERNAME=user
+      - DB_PASSWORD=password
+      - DB_NAME=matomo
+      - MATOMO_TRUSTED_HOSTS=localhost
+      - MATOMO_PLUGINS=CustomReports
+    depends_on:
+      - mariadb
+
+secrets:
+  matomo_license_key:
+    environment: MATOMO_LICENSE_KEY
