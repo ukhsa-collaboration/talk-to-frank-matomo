@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
 
-export DB_HOST=${DB_HOST:-mariadb}
-export DB_USERNAME=${DB_USERNAME:-user}
-export DB_PASSWORD=${DB_PASSWORD:-password}
-export DB_NAME=${DB_NAME:-matomo}
+export MATOMO_DATABASE_HOST=${MATOMO_DATABASE_HOST:-mariadb}
+export MATOMO_DATABASE_USERNAME=${MATOMO_DATABASE_USERNAME:-user}
+export MATOMO_DATABASE_PASSWORD=${MATOMO_DATABASE_PASSWORD:-password}
+export MATOMO_DATABASE_DBNAME=${MATOMO_DATABASE_DBNAME:-matomo}
 export MATOMO_SALT=${MATOMO_SALT:-$(openssl rand -hex 32)}
 export MATOMO_TRUSTED_HOSTS=${MATOMO_TRUSTED_HOSTS:-localhost}
 CONFIG_PATH=/var/www/html/config/config.ini.php
@@ -29,10 +29,10 @@ run_as_www_data() {
 db_has_schema() {
   rm -f "$DB_EXISTS_MARKER"
   php -r "
-  \$host = getenv('DB_HOST') ?: 'mariadb';
-  \$user = getenv('DB_USERNAME') ?: 'user';
-  \$pass = getenv('DB_PASSWORD') ?: 'password';
-  \$name = getenv('DB_NAME') ?: 'matomo';
+  \$host = getenv('MATOMO_DATABASE_HOST') ?: 'mariadb';
+  \$user = getenv('MATOMO_DATABASE_USERNAME') ?: 'user';
+  \$pass = getenv('MATOMO_DATABASE_PASSWORD') ?: 'password';
+  \$name = getenv('MATOMO_DATABASE_DBNAME') ?: 'matomo';
   \$mysqli = @new mysqli(\$host, \$user, \$pass, \$name);
   if (\$mysqli->connect_errno) { exit(2); }
   \$tableCheck = \$mysqli->query(\"SELECT COUNT(*) AS cnt FROM information_schema.tables WHERE table_schema = '\$name' AND table_name = 'matomo_option'\");

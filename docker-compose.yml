@@ -4,7 +4,7 @@ services:
   mariadb:
     environment:
       - MARIADB_DATABASE=matomo
-      - MARIADB_PASSWORD=password
+      - MARIAMATOMO_DATABASE_PASSWORD=password
       - MARIADB_ROOT_PASSWORD=secretpassword
       - MARIADB_USER=user
     image: mariadb:latest
@@ -17,10 +17,10 @@ services:
     ports:
       - "80:80"
     environment:
-      - DB_HOST=mariadb
-      - DB_USERNAME=user
-      - DB_PASSWORD=password
-      - DB_NAME=matomo
+      - MATOMO_DATABASE_HOST=mariadb
+      - MATOMO_DATABASE_USERNAME=user
+      - MATOMO_DATABASE_PASSWORD=password
+      - MATOMO_DATABASE_DBNAME=matomo
       - MATOMO_TRUSTED_HOSTS=localhost
       - MATOMO_PLUGINS=CustomReports
     depends_on:

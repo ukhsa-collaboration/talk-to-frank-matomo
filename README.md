@@ -11,10 +11,10 @@ Dockerized Matomo (with MariaDB for local testing), with the Matomo `CustomRepor
 
 Runtime (used by the container):
 
-- `DB_HOST`: database host (default `mariadb`)
-- `DB_USERNAME`: database username (default `user`)
-- `DB_PASSWORD`: database password (default `password`)
-- `DB_NAME`: database name (default `matomo`)
+- `MATOMO_DATABASE_HOST`: database host (default `mariadb`)
+- `MATOMO_DATABASE_USERNAME`: database username (default `user`)
+- `MATOMO_DATABASE_PASSWORD`: database password (default `password`)
+- `MATOMO_DATABASE_DBNAME`: database name (default `matomo`)
 - `MATOMO_TRUSTED_HOSTS`: trusted host for Matomo (default `localhost`)
 - `MATOMO_SALT`: Matomo salt (default: generated when `config.ini.php` is generated - this is on every restart for ECS)
 - `MATOMO_LICENSE_KEY`: Marketplace license key (used to activate paid plugins like `CustomReports`)
