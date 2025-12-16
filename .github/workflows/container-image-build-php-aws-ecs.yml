@@ -208,7 +208,7 @@ jobs:
           cache-from: ${{ inputs.push_image && format('type=registry,ref={0}/{1}/{2}:latest', env.ECR_REGISTRY_HOST, env.ECR_NAMESPACE, env.APP_NAME) || '' }}
           cache-to: ${{ inputs.push_image && 'type=inline' || '' }}
           secrets: |
-            MATOMO_LICENSE_KEY=${{ secrets.MATOMO_LICENSE_KEY }}
+            matomo_license_key=${{ secrets.MATOMO_LICENSE_KEY }}
           build-args: |
             APP_CODE_COMMIT_HASH=${{ github.sha }}
             APP_VERSION=${{ steps.image-version.outputs.value }}
