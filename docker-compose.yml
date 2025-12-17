@@ -4,7 +4,7 @@ services:
   mariadb:
     environment:
       - MARIADB_DATABASE=matomo
-      - MARIAMATOMO_DATABASE_PASSWORD=password
+      - MARIADB_PASSWORD=password
       - MARIADB_ROOT_PASSWORD=secretpassword
       - MARIADB_USER=user
     image: mariadb:latest
@@ -25,6 +25,12 @@ services:
       - MATOMO_PLUGINS=CustomReports
     depends_on:
       - mariadb
+    healthcheck:
+      test: ["CMD", "/tmp/healthcheck.sh"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
 
 secrets:
   matomo_license_key:
